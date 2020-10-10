@@ -1,5 +1,7 @@
 'use strict';
 
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const routeDataMapper = require('webpack-route-data-mapper');
 const readConfig = require('read-config');
@@ -11,32 +13,33 @@ const DEST = './public';
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3000;
 
-const constants = readConfig(`${SRC}/constants.yml`);
-const { BASE_DIR } = constants;
+// read config from yaml files
+const constant = readConfig(`${SRC}/constant.yml`);
+const { BASE_DIR } = constant;
+const entry = readConfig(`${SRC}/entry.yml`);
+const { ENTRY } = entry;
 
-// page/**/*.pug -> dist/**/*.html
+// page/**/*.pug -> public/**/*.html
 const htmlTemplates = routeDataMapper({
   baseDir: `${SRC}/pug/page`,
   src: '**/[!_]*.pug',
-  locals: Object.assign({}, constants, {
-    meta: readConfig(`${SRC}/pug/meta.yml`)
+  option: {
+    inject: false
+  },
+  locals: Object.assign({}, constant, {
+    meta: readConfig(`${SRC}/pug/meta.yml`),
+    constant
   })
 });
 
 module.exports = {
-  // エントリーファイル
-  entry: {
-    'js/script.js': `${SRC}/js/script.js`,
-    'css/style.css': `${SRC}/scss/style.scss`
-  },
-  // 出力するディレクトリ・ファイル名などの設定
+  entry: ENTRY,
   output: {
     path: path.resolve(__dirname, DEST + BASE_DIR),
     filename: '[name]',
     publicPath: BASE_DIR
   },
   module: {
-    // 各ファイル形式ごとのビルド設定
     rules: [
       {
         test: /\.js$/,
@@ -111,6 +114,15 @@ module.exports = {
   },
 
   plugins: [
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(`${SRC}/static`),
+          to: path.resolve(DEST)
+        }
+      ]
+    }),
     // 複数のHTMLファイルを出力する
     ...htmlTemplates,
     // style.cssを出力
