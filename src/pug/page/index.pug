@@ -3,9 +3,11 @@ extends /layout/_default-layout
 prepend config-block
   - page_name = ''
 
-append stylesheet-block
+prepend stylesheet-block
+  link(rel="stylesheet" href='/style.css')
 
-append javascript-block
+prepend javascript-block
+  script(type="text/javascript" src="/script.js" defer)
 
 block content-block
-  canvas.canvas
+  canvas#myCanvas
