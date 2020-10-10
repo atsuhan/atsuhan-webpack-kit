@@ -87,8 +87,9 @@ module.exports = {
         })
       },
       {
-        test: /.ya?ml$/,
-        loader: 'js-yaml-loader'
+        test: /\.ya?ml$/,
+        type: 'json',
+        use: 'yaml-loader'
       }
     ]
   },
