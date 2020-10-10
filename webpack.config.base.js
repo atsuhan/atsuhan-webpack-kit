@@ -1,6 +1,5 @@
 'use strict';
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const routeDataMapper = require('webpack-route-data-mapper');
@@ -23,12 +22,11 @@ const { ENTRY } = entry;
 const htmlTemplates = routeDataMapper({
   baseDir: `${SRC}/pug/page`,
   src: '**/[!_]*.pug',
-  option: {
+  options: {
     inject: false
   },
   locals: Object.assign({}, constant, {
-    meta: readConfig(`${SRC}/pug/meta.yml`),
-    constant
+    meta: readConfig(`${SRC}/pug/meta.yml`)
   })
 });
 
@@ -114,7 +112,6 @@ module.exports = {
   },
 
   plugins: [
-    new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         {
